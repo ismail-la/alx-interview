@@ -15,36 +15,39 @@ Write a script that reads stdin line by line and computes metrics:
 '''
 import sys
 
-if __name__ == "__main__":
-    size_total = [0]
-    codes_dict = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+codes_dict = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
+                     '404': 0, '405': 0, '500': 0}
 
-    def check_match(line):
-        '''Checks for regexp match in line'''
-        try:
-            line = line[:-1]
-            words_list = line.split(" ")
-            size_total[0] += int(words_list[-1])
-            code_status = int(words_list[-2])
-            if code_status in codes_dict:
+size_total = 0
+count = 0
+
+try:
+    for line in sys.stdin:
+        line_list = line.split(" ")
+
+        if len(line_list) > 4:
+            code_status = line_list[-2]
+            size_file = int(line_list[-1])
+
+            if code_status in codes_dict.keys():
                 codes_dict[code_status] += 1
-        except:
-            pass
 
-    def print_stats():
-        '''Prints accumulated statistics'''
-        print("File size: {}".format(size_total[0]))
-        for key in sorted(codes_dict.keys()):
-            if codes_dict[key]:
-                print("{}: {}".format(key, codes_dict[key]))
-    count = 1
-    try:
-        for line in sys.stdin:
-            check_match(line)
-            if count % 10 == 0:
-                print_stats()
+            size_total += size_file
             count += 1
-    except KeyboardInterrupt:
-        print_stats()
-        raise
-    print_stats()
+
+        if count == 10:
+            count = 0
+            print('File size: {}'.format(size_total))
+
+            for key, value in sorted(codes_dict.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
+
+except Exception as err:
+    pass
+
+finally:
+    print('File size: {}'.format(size_total))
+    for key, value in sorted(codes_dict.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
