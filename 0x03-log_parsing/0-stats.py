@@ -24,7 +24,7 @@ if __name__ == "__main__":
         try:
             line = line[:-1]
             words_list = line.split(" ")
-            size[0] += int(words_list[-1])
+            size_total[0] += int(words_list[-1])
             code_status = int(words_list[-2])
             if code_status in codes_dict:
                 codes_dict[code_status] += 1
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     def print_stats():
         '''Prints accumulated statistics'''
-        print("File size: {}".format(size[0]))
+        print("File size: {}".format(size_total[0]))
         for key in sorted(codes_dict.keys()):
             if codes_dict[key]:
                 print("{}: {}".format(key, codes_dict[key]))
