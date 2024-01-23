@@ -13,6 +13,8 @@ Write a script that reads stdin line by line and computes metrics:
       -status codes should be printed in ascending order
 
 '''
+
+
 import sys
 
 codes_dict = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
