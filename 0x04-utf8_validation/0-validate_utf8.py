@@ -13,8 +13,9 @@ A method that determines if a given data set represents a valid UTF-8 encoding
 
 def validUTF8(data):
     """
-    Checks if a given data (list of integers) set represents a valid UTF-8 encoding.
-    
+    Checks if a given data (list of integers) set represents a
+    valid UTF-8 encoding.
+
     Args:
         data (list[int]): a list of integers
     """
