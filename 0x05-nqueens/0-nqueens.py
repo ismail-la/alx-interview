@@ -1,68 +1,68 @@
 #!/usr/bin/python3
-"""
-Solution to the nqueens problem
-"""
+"""N Queens problem Solution module"""
+
 import sys
 
 
-def backtrack(r, n, cols, pos, neg, board):
+def Get_solutions(ro, col):
+    resolution = [[]]
+    for queen in range(ro):
+        resolution = queen_position(queen, col, resolution)
+    return resolution
+
+
+def queen_position(queen, col, prev_resolution):
+    safe_place = []
+    for array in prev_resolution:
+        for i in range(col):
+            if is_queen_placement_safe(queen, i, array):
+                safe_place.append(array + [i])
+    return safe_place
+
+
+def is_queen_placement_safe(q, i, array):
+    """checks if placing a queen.
+    -q:  is likely the column index we're trying to check for safety.
+    -i: is the row index we're considering placing the queen in.
+    -array: represents the current arrangement of queens on the board.
     """
-    backtrack function to find solution
+    if i in array:
+        return (False)
+    else:
+        return all(abs(array[column] - i) != q - column
+                   for column in range(q))
+
+
+def init():
+    """ initialization of the program
+    The function checks if the number of command-line arguments provided
+    is exactly 2. If not, it prints a usage message and exits the program
+    with an error code of 1.
     """
-    if r == n:
-        res = []
-        for l in range(len(board)):
-            for k in range(len(board[l])):
-                if board[l][k] == 1:
-                    res.append([l, k])
-        print(res)
-        return
-
-    for c in range(n):
-        if c in cols or (r + c) in pos or (r - c) in neg:
-            continue
-
-        cols.add(c)
-        pos.add(r + c)
-        neg.add(r - c)
-        board[r][c] = 1
-
-        backtrack(r+1, n, cols, pos, neg, board)
-
-        cols.remove(c)
-        pos.remove(r + c)
-        neg.remove(r - c)
-        board[r][c] = 0
-
-
-def nqueens(n):
-    """
-    Solution to nqueens problem
-    Args:
-        n (int): number of queens. Must be >= 4
-    Return:
-        List of lists representing coordinates of each
-        queen for all possible solutions
-    """
-    cols = set()
-    pos_diag = set()
-    neg_diag = set()
-    board = [[0] * n for i in range(n)]
-
-    backtrack(0, n, cols, pos_diag, neg_diag, board)
-
-
-if __name__ == "__main__":
-    n = sys.argv
-    if len(n) != 2:
+    if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    try:
-        nn = int(n[1])
-        if nn < 4:
-            print("N must be at least 4")
-            sys.exit(1)
-        nqueens(nn)
-    except ValueError:
+    if sys.argv[1].isdigit():
+        N = int(sys.argv[1])
+    else:
         print("N must be a number")
         sys.exit(1)
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+    return (N)
+
+
+def Nqueens():
+
+    N = init()
+    solutions = Get_solutions(N, N)
+    for array in solutions:
+        clean = []
+        for q, i in enumerate(array):
+            clean.append([q, i])
+        print(clean)
+
+
+if __name__ == '__main__':
+    Nqueens()
