@@ -1,68 +1,125 @@
 #!/usr/bin/python3
-"""N Queens problem Solution module"""
-
-import sys
-
-
-def Get_solutions(ro, col):
-    resolution = [[]]
-    for queen in range(ro):
-        resolution = queen_position(queen, col, resolution)
-    return resolution
+""" A program that solves the N queens problem
+"""
+from sys import argv
 
 
-def queen_position(queen, col, prev_resolution):
-    safe_place = []
-    for array in prev_resolution:
-        for i in range(col):
-            if is_queen_placement_safe(queen, i, array):
-                safe_place.append(array + [i])
-    return safe_place
+def check_row(board, index, board_len):
+    """ Check if there is a queen in the row """
+    for r in range(board_len):
+        if board[index][r]:
+            return (False)
+
+    return (True)
 
 
-def is_queen_placement_safe(q, i, array):
-    """checks if placing a queen.
-    -q:  is likely the column index we're trying to check for safety.
-    -i: is the row index we're considering placing the queen in.
-    -array: represents the current arrangement of queens on the board.
-    """
-    if i in array:
+def check_r_angle(board, row, col, board_len):
+    """ Check if there is a queen in the left angle """
+    c = col
+    for r in range(row, -1, -1):
+        if c >= board_len:
+            break
+        if board[r][c]:
+            return (False)
+        c += 1
+
+    c = col
+    for r in range(row, board_len):
+        if c < 0:
+            break
+        if board[r][c]:
+            return (False)
+        c -= 1
+
+    return (True)
+
+
+def check_l_angle(board, row, col, board_len):
+    """ Check if there is a queen in the right angle """
+    c = col
+    for r in range(row, -1, -1):
+        if c < 0:
+            break
+        if board[r][c]:
+            return (False)
+        c -= 1
+
+    c = col
+    for r in range(row, board_len):
+        if c >= board_len:
+            break
+        if board[r][c]:
+            return (False)
+        c += 1
+
+    return (True)
+
+
+def chek_all(board, r, c, n):
+    if not check_row(board, r, n):
         return (False)
-    else:
-        return all(abs(array[column] - i) != q - column
-                   for column in range(q))
+
+    if not check_l_angle(board, r, c, n):
+        return (False)
+
+    return (check_r_angle(board, r, c, n))
 
 
-def init():
-    """ initialization of the program
-    The function checks if the number of command-line arguments provided
-    is exactly 2. If not, it prints a usage message and exits the program
-    with an error code of 1.
-    """
-    if len(sys.argv) != 2:
+def main():
+    """ The Main Function """
+
+    argc = len(argv)
+    if argc != 2:
         print("Usage: nqueens N")
-        sys.exit(1)
-    if sys.argv[1].isdigit():
-        N = int(sys.argv[1])
-    else:
+        exit(1)
+
+    try:
+        n = int(argv[1])
+    except Exception:
         print("N must be a number")
-        sys.exit(1)
-    if N < 4:
+        exit(1)
+
+    if n < 4:
         print("N must be at least 4")
-        sys.exit(1)
-    return (N)
+        exit(1)
+
+    n_range = range(n)
+    i = 0
+    c = 0
+    r = i
+    board = [[0 for _ in n_range] for _ in n_range]
+    result = []
+    while i < n:
+        while (c < n):
+            found = 0
+
+            while (r < n):
+                if chek_all(board, r, c, n):
+                    board[r][c] = 1
+                    result.append([c, r])
+                    found = 1
+                    r = 0
+                    break
+                r += 1
+
+            if not found and len(result):
+                last_i = result.pop()
+                c = last_i[0]
+                r = last_i[1] + 1
+                board[last_i[1]][last_i[0]] = 0
+                continue
+            c += 1
+
+        if len(result):
+            print(result)
+            i = result[0][1]
+            last_i = result.pop()
+            c = last_i[0]
+            r = last_i[1] + 1
+            board[last_i[1]][last_i[0]] = 0
+        else:
+            return
 
 
-def Nqueens():
-
-    N = init()
-    solutions = Get_solutions(N, N)
-    for array in solutions:
-        clean = []
-        for q, i in enumerate(array):
-            clean.append([q, i])
-        print(clean)
-
-
-if __name__ == '__main__':
-    Nqueens()
+if __name__ == "__main__":
+    main()
