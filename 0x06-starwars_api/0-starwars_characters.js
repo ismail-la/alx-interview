@@ -1,53 +1,29 @@
 #!/usr/bin/node
-
 const request = require('request');
+const movie_id = process.argv[2];
+const movie_url = 'https://swapi-api.alx-tools.com/api/films/' + movie_id;
 
-const movieId = process.argv[2];
-const filmEndPoint = 'https://swapi-api.hbtn.io/api/films/' + movieId;
-let people = [];
-const names = [];
+function Req (char_List, index) {
+  if (char_List.length === index) {
+    return;
+  }
 
-const requestCharacters = async () => {
-  await new Promise(resolve => request(filmEndPoint, (err, res, body) => {
-    if (err || res.statusCode !== 200) {
-      console.error('Error: ', err, '| StatusCode: ', res.statusCode);
+  request(char_List[index], (error, response, body) => {
+    if (error) {
+      console.log(error);
     } else {
-      const jsonBody = JSON.parse(body);
-      people = jsonBody.characters;
-      resolve();
+      console.log(JSON.parse(body).name);
+      Req(char_List, index + 1);
     }
-  }));
-};
+  });
+}
 
-const requestNames = async () => {
-  if (people.length > 0) {
-    for (const p of people) {
-      await new Promise(resolve => request(p, (err, res, body) => {
-        if (err || res.statusCode !== 200) {
-          console.error('Error: ', err, '| StatusCode: ', res.statusCode);
-        } else {
-          const jsonBody = JSON.parse(body);
-          names.push(jsonBody.name);
-          resolve();
-        }
-      }));
-    }
+request(movie_url, (error, response, body) => {
+  if (error) {
+    console.log(error);
   } else {
-    console.error('Error: Got no Characters for some reason');
+    const char_List = JSON.parse(body).characters;
+
+    Req(char_List, 0);
   }
-};
-
-const getCharNames = async () => {
-  await requestCharacters();
-  await requestNames();
-
-  for (const n of names) {
-    if (n === names[names.length - 1]) {
-      process.stdout.write(n);
-    } else {
-      process.stdout.write(n + '\n');
-    }
-  }
-};
-
-getCharNames();
+});
