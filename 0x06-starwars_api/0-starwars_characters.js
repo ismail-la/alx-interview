@@ -1,53 +1,67 @@
 #!/usr/bin/node
 
+'use strict';
+
 const request = require('request');
 
-const movieId = process.argv[2];
-const filmEndPoint = 'https://swapi-api.hbtn.io/api/films/' + movieId;
-let people = [];
-const names = [];
+/**
+ * Function to make a request to the Star Wars API to retrieve movie information
+ * and print the characters of the movie based on the provided Movie ID.
+ * @param {string} movieId - The ID of the Star Wars movie.
+ */
+function getMovieCharacters(movieId) {
+  const movieUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}`;
 
-const requestCharacters = async () => {
-  await new Promise(resolve => request(filmEndPoint, (err, res, body) => {
-    if (err || res.statusCode !== 200) {
-      console.error('Error: ', err, '| StatusCode: ', res.statusCode);
-    } else {
-      const jsonBody = JSON.parse(body);
-      people = jsonBody.characters;
-      resolve();
+  request.get(movieUrl, (error, response, body) => {
+    if (error) {
+      console.error('Error:', error);
+      return;
     }
-  }));
-};
 
-const requestNames = async () => {
-  if (people.length > 0) {
-    for (const p of people) {
-      await new Promise(resolve => request(p, (err, res, body) => {
-        if (err || res.statusCode !== 200) {
-          console.error('Error: ', err, '| StatusCode: ', res.statusCode);
-        } else {
-          const jsonBody = JSON.parse(body);
-          names.push(jsonBody.name);
-          resolve();
-        }
-      }));
+    if (response.statusCode !== 200) {
+      console.error('Invalid response:', response.statusCode);
+      return;
     }
-  } else {
-    console.error('Error: Got no Characters for some reason');
-  }
-};
 
-const getCharNames = async () => {
-  await requestCharacters();
-  await requestNames();
+    try {
+      const movieData = JSON.parse(body);
+      const characters = movieData.characters;
 
-  for (const n of names) {
-    if (n === names[names.length - 1]) {
-      process.stdout.write(n);
-    } else {
-      process.stdout.write(n + '\n');
+      if (!characters || characters.length === 0) {
+        console.log('No characters found for this movie.');
+        return;
+      }
+
+      // Print characters
+      characters.forEach(characterUrl => {
+        request.get(characterUrl, (error, response, body) => {
+          if (error) {
+            console.error('Error:', error);
+            return;
+          }
+
+          if (response.statusCode !== 200) {
+            console.error('Invalid response:', response.statusCode);
+            return;
+          }
+
+          const characterData = JSON.parse(body);
+          console.log(characterData.name);
+        });
+      });
+    } catch (parseError) {
+      console.error('Error parsing response:', parseError);
     }
-  }
-};
+  });
+}
 
-getCharNames();
+// Get the Movie ID from the command line arguments
+const args = process.argv.slice(2);
+const movieId = args[0];
+
+if (!movieId) {
+  console.error('Please provide the Movie ID as the first argument.');
+  process.exit(1);
+}
+
+getMovieCharacters(movieId);
