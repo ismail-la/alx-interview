@@ -32,26 +32,41 @@ function getMovieCharacters(movieId) {
         return;
       }
 
-      // Print characters
-      characters.forEach(characterUrl => {
-        request.get(characterUrl, (error, response, body) => {
-          if (error) {
-            console.error('Error:', error);
-            return;
-          }
-
-          if (response.statusCode !== 200) {
-            console.error('Invalid response:', response.statusCode);
-            return;
-          }
-
-          const characterData = JSON.parse(body);
-          console.log(characterData.name);
-        });
-      });
+      // Sequentially print characters
+      printCharactersSequentially(characters, 0);
     } catch (parseError) {
       console.error('Error parsing response:', parseError);
     }
+  });
+}
+
+/**
+ * Function to print characters sequentially.
+ * @param {Array} characters - Array of character URLs.
+ * @param {number} index - Index of the character to print.
+ */
+function printCharactersSequentially(characters, index) {
+  if (index >= characters.length) {
+    return;
+  }
+
+  const characterUrl = characters[index];
+  request.get(characterUrl, (error, response, body) => {
+    if (error) {
+      console.error('Error:', error);
+      return;
+    }
+
+    if (response.statusCode !== 200) {
+      console.error('Invalid response:', response.statusCode);
+      return;
+    }
+
+    const characterData = JSON.parse(body);
+    console.log(characterData.name);
+
+    // Print the next character
+    printCharactersSequentially(characters, index + 1);
   });
 }
 
