@@ -1,31 +1,30 @@
 #!/usr/bin/node
 
-const request = require('request');
+const axios = require('axios');
 
 const movieId = process.argv[2];
 const movieEndpoint = 'https://swapi-api.alx-tools.com/api/films/' + movieId;
 
-function sendRequest (characterList, index) {
-  if (characterList.length === index) {
-    return;
-  }
-
-  request(characterList[index], (error, response, body) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(JSON.parse(body).name);
-      sendRequest(characterList, index + 1);
+async function sendRequest(characterList) {
+  try {
+    for (const characterUrl of characterList) {
+      const response = await axios.get(characterUrl);
+      console.log(response.data.name);
     }
-  });
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
-request(movieEndpoint, (error, response, body) => {
-  if (error) {
-    console.log(error);
-  } else {
-    const characterList = JSON.parse(body).characters;
-
-    sendRequest(characterList, 0);
+async function main() {
+  try {
+    const response = await axios.get(movieEndpoint);
+    const characterList = response.data.characters;
+    await sendRequest(characterList);
+  } catch (error) {
+    console.error(error.message);
   }
-});
+}
+
+main();
+
