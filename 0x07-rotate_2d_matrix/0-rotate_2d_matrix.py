@@ -12,20 +12,14 @@ def transpose_matrix(matrix, n):
 
 
 def reverse_matrix(matrix):
-    """_summary_
-
-    Args:
-                    matrix (_type_): _description_
+    """
     """
     for row in matrix:
         row.reverse()
 
 
 def rotate_2d_matrix(matrix):
-    """_summary_
-
-    Args:
-                    matrix (_type_): _description_
+    """
     """
     n = len(matrix)
     # print(n)
