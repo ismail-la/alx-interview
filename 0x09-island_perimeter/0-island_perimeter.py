@@ -1,21 +1,19 @@
 #!/usr/bin/python3
-""" Island perimeter problem
-"""
+""" Island Perimeter problem """
 
 
 def island_perimeter(grid):
-    """ Calculates perimeter of an island
-    """
+    """Calculates the Perimeter of an island"""
     perimeter = 0
-    for row_index in range(len(grid)):
+    for i in range(len(grid)):
         for cell_index in range(len(grid[0])):
-            current_cell = grid[row_index][cell_index]
+            current_cell = grid[i][cell_index]
             if not current_cell:
                 continue
-            upper_cell = None if not row_index else \
-                grid[row_index - 1][cell_index]
+            upper_cell = None if not i else \
+                grid[i - 1][cell_index]
             left_cell = None if not cell_index else \
-                grid[row_index][cell_index - 1]
+                grid[i][cell_index - 1]
             cell_perimeter = 4
             if upper_cell:
                 cell_perimeter = cell_perimeter - 2
