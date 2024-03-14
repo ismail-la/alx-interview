@@ -1,30 +1,41 @@
 #!/usr/bin/python3
-""" Module for solving prime game question """
+""" Module for solving prime game problem using the eratosthenes algorithm.
+"""
 
 
 def isWinner(x, nums):
-    """function that checks for the winner"""
-    if not nums or x < 1:
-        return None
-    max_num = max(nums)
+    """Determine the winner in the prime game.
+    x: An integer representing the number of rounds in the prime game.
+    nums: A list of integers representing the upper bounds for each round.
+    """
+    Maria = 0
+    Ben = 0
 
-    my_filter = [True for _ in range(max(max_num + 1, 2))]
-    for i in range(2, int(pow(max_num, 0.5)) + 1):
-        if not my_filter[i]:
-            continue
-        for j in range(i * i, max_num + 1, i):
-            my_filter[j] = False
-    my_filter[0] = my_filter[1] = False
-    y = 0
-    for i in range(len(my_filter)):
-        if my_filter[i]:
-            y += 1
-        my_filter[i] = y
-    player1 = 0
-    for x in nums:
-        player1 += my_filter[x] % 2 == 1
-    if player1 * 2 == len(nums):
+
+    for round in range(x):
+        """his loop iterates through each round of the game (from 0 to x-1).
+        """
+        list_playing_numbers = [num for num in range(2, nums[round] + 1)]
+        index = 0
+        # Implements the Sieve of Eratosthenes algorithm
+        while (index < len(list_playing_numbers)):
+            currentPrime = list_playing_numbers[index]
+            sieveIndex = index + currentPrime
+            while(sieveIndex < len(list_playing_numbers)):
+                list_playing_numbers.pop(sieveIndex)
+                sieveIndex += currentPrime - 1
+            index += 1
+        # Determining the Winner:
+        # -If the count is even, Maria wins (increment Maria),
+        # Otherwise, Ben wins (increment Ben).
+        # -If Maria and Ben have the same score, the function returns None.
+        # Otherwise, it returns the name of the winner either ‘Ben’ or ‘Maria’
+        primeCount = (len(list_playing_numbers))
+        if primeCount and primeCount % 2:
+            Maria += 1
+        else:
+            Ben += 1
+
+    if Ben == Maria:
         return None
-    if player1 * 2 > len(nums):
-        return "Maria"
-    return "Ben"
+    return 'Ben' if Ben > Maria else 'Maria'
