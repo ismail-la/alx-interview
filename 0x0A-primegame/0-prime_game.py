@@ -1,57 +1,39 @@
 #!/usr/bin/python3
-"""Module defining isWinner function."""
+""" Module for solving prime game problem using the eratosthenes algorithm.
+"""
 
 
 def isWinner(x, nums):
-    """Function to get who has won in prime game"""
-    mariaWinsCount = 0
-    benWinsCount = 0
+    """Determine the winner in the prime game.
+    x: An integer representing the number of rounds in the prime game.
+    nums: A list of integers representing the upper bounds for each round.
+    """
+    if not nums or x < 1:
+        return None
+    numMax = max(nums)
 
-    for num in nums:
-        roundsSet = list(range(1, num + 1))
-        primesSet = primes_in_range(1, num)
-
-        if not primesSet:
-            benWinsCount += 1
+    # Implements the Sieve of Eratosthenes algorithm
+    list_filter = [True for _ in range(max(numMax + 1, 2))]
+    for i in range(2, int(pow(numMax, 0.5)) + 1):
+        if not list_filter[i]:
             continue
-
-        isMariaTurns = True
-
-        while(True):
-            if not primesSet:
-                if isMariaTurns:
-                    benWinsCount += 1
-                else:
-                    mariaWinsCount += 1
-                break
-
-            smallestPrime = primesSet.pop(0)
-            roundsSet.remove(smallestPrime)
-
-            roundsSet = [x for x in roundsSet if x % smallestPrime != 0]
-
-            isMariaTurns = not isMariaTurns
-
-    if mariaWinsCount > benWinsCount:
-        return "Winner: Maria"
-
-    if mariaWinsCount < benWinsCount:
-        return "Winner: Ben"
-
-    return None
-
-
-def is_prime(n):
-    """Returns True if n is prime, else False."""
-    if n < 2:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-
-
-def primes_in_range(start, end):
-    """Returns a list of prime numbers between start and end (inclusive)."""
-    primes = [n for n in range(start, end+1) if is_prime(n)]
-    return primes
+        for j in range(i * i, numMax + 1, i):
+            list_filter[j] = False
+    list_filter[0] = list_filter[1] = False
+    y = 0
+    for i in range(len(list_filter)):
+        if list_filter[i]:
+            y += 1
+        list_filter[i] = y
+    firstPlayer = 0
+    # Winner Determination:
+    # -If firstPlayer wins exactly half the rounds, the function returns None.
+    # -If firstPlayer wins more than half the rounds, it returns "Maria".
+    # Otherwise, it returns "Ben".
+    for x in nums:
+        firstPlayer += list_filter[x] % 2 == 1
+    if firstPlayer * 2 == len(nums):
+        return None
+    if firstPlayer * 2 > len(nums):
+        return "Maria"
+    return "Ben"
