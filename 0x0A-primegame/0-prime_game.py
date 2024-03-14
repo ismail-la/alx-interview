@@ -11,7 +11,6 @@ def isWinner(x, nums):
     Maria = 0
     Ben = 0
 
-
     for round in range(x):
         """his loop iterates through each round of the game (from 0 to x-1).
         """
