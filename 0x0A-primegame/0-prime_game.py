@@ -25,9 +25,9 @@ def isWinner(x, nums):
                 sieveIndex += currentPrime - 1
             index += 1
         # Determining the Winner:
-        # -If the count is even, Maria wins (increment Maria),
+        # If the count is even, Maria wins (increment Maria),
         # Otherwise, Ben wins (increment Ben).
-        # -If Maria and Ben have the same score, the function returns None.
+        # If Maria and Ben have the same score, the function returns None.
         # Otherwise, it returns the name of the winner either ‘Ben’ or ‘Maria’
         primeCount = (len(list_playing_numbers))
         if primeCount and primeCount % 2:
